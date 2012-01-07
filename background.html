@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
- * Copyright (C) 2011 Michael de Silva <michael@mwdesilva.com>
- * blog: http://www.bsodmike.com / github: http://github.com/bsodmike
+ * Copyright (C) 2011 - 2012 Michael de Silva <michael@mwdesilva.com>
+ * blog: http://www.mwdesilva.com / github: http://github.com/bsodmike
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,56 +29,63 @@ var tabs = new Array();
 new_index = 0;
 
 chrome.tabs.getSelected(null, function(tab){
-  // console.log('changed tab to #' + tab.id + " index: " + tab.index);
+  consoleLog('changed tab to #' + tab.id + " index: " + tab.index);
   tabs.push(tab.index);
 });
 
-chrome.tabs.onCreated.addListener(TabCreated);
-chrome.tabs.onSelectionChanged.addListener(TabSelectionChanged);
-chrome.tabs.onActiveChanged.addListener(TabActiveChanged);
-chrome.tabs.onHighlightChanged.addListener(TabHighlightChanged);
-chrome.tabs.onMoved.addListener(TabMoved);
+chrome.tabs.onCreated.addListener(tabCreated);
+chrome.tabs.onSelectionChanged.addListener(tabSelectionChanged);
+chrome.tabs.onActiveChanged.addListener(tabActiveChanged);
+chrome.tabs.onHighlightChanged.addListener(tabHighlightChanged);
+chrome.tabs.onMoved.addListener(tabMoved);
 
-function TabCreated(tab) {
-  console.log('tabs.onCreated --'
+function tabCreated(tab) {
+  consoleLog('tabs.onCreated --'
                 + ' window: ' + tab.windowId
                 + ' tab: '    + tab.id
                 + ' index: '  + tab.index
                 + ' url: '    + tab.url);           
-  console.log('moving tab to index ' + new_index);
-  chrome.tabs.move(tab.id,{index:new_index});           
+  consoleLog('moving tab to index ' + new_index);
+  chrome.tabs.move(tab.id,{index:tabs[tabs.length-1]});           
 };
 
-function TabSelectionChanged(tab){
+function tabSelectionChanged(tab){
   chrome.tabs.getSelected(null, function(tab){
-    console.log('changed tab to #' + tab.id + " index: " + tab.index);
-    tabs.push(tab.index);
-    if (tabs.length > 2) tabs.shift();
-    new_index = tabs[tabs.length-1];     
+    consoleLog('changed tab to #' + tab.id + " index: " + tab.index);
+		tabsArrayUpdate(tab);
   });
 };
 
-function TabActiveChanged(tab){
+function tabActiveChanged(tab){
 	chrome.tabs.getSelected(null, function(tab){
-		console.log('TabActiveChanged tab to #' + tab.id + " index: " + tab.index);
-		new_index = tab.index;
+		consoleLog('TabActiveChanged tab to #' + tab.id + " index: " + tab.index);
+		tabsArrayUpdate(tab);
 	});
 };
 
-function TabHighlightChanged(tab){
+function tabHighlightChanged(tab){
 	chrome.tabs.getSelected(null, function(tab){
-		console.log('TabHighlightChanged tab to #' + tab.id + " index: " + tab.index);
-		new_index = tab.index;
+		consoleLog('TabHighlightChanged tab to #' + tab.id + " index: " + tab.index);
+		tabsArrayUpdate(tab);
 	});
 };
 
-function TabMoved(tab){
+function tabMoved(tab){
 	chrome.tabs.getSelected(null, function(tab){
-		console.log('TabMoved to #' + tab.id + " index: " + tab.index);
-		new_index = tab.index;
+		consoleLog('TabMoved to #' + tab.id + " index: " + tab.index);
+		tabsArrayUpdate(tab);
 	});
 };
 
+function tabsArrayUpdate(tab){
+	tabs.push(tab.index);
+	if (tabs.length > 2) tabs.shift();
+	new_index = tabs[tabs.length-1];
+}
+
+function consoleLog(message){
+	// console.log(message);
+};
 
 // function to write arbitrary messages and timestamps into the 
 // <div id=log> tag in this page
