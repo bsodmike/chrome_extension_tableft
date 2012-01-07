@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+ * Copyright (C) 2011 Michael de Silva <michael@mwdesilva.com>
+ * blog: http://www.bsodmike.com / github: http://github.com/bsodmike
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+-->
+<html>
+<head>
+</head>
+<body>
+<script>
+var tabs = new Array();
+new_index = 0;
+
+chrome.tabs.getSelected(null, function(tab){
+  // console.log('changed tab to #' + tab.id + " index: " + tab.index);
+  tabs.push(tab.index);
+});
+
+chrome.tabs.onCreated.addListener(TabCreated);
+chrome.tabs.onSelectionChanged.addListener(TabSelectionChanged);
+chrome.tabs.onActiveChanged.addListener(TabActiveChanged);
+chrome.tabs.onHighlightChanged.addListener(TabHighlightChanged);
+
+function TabCreated(tab) {
+  console.log('tabs.onCreated --'
+                + ' window: ' + tab.windowId
+                + ' tab: '    + tab.id
+                + ' index: '  + tab.index
+                + ' url: '    + tab.url);           
+  console.log('moving tab to index ' + new_index);
+  chrome.tabs.move(tab.id,{index:new_index});           
+};
+
+function TabSelectionChanged(tab){
+  chrome.tabs.getSelected(null, function(tab){
+    console.log('changed tab to #' + tab.id + " index: " + tab.index);
+    tabs.push(tab.index);
+    if (tabs.length > 2) tabs.shift();
+    new_index = tabs[tabs.length-1];     
+  });
+};
+
+function TabActiveChanged(tab){
+	chrome.tabs.getSelected(null, function(tab){
+		console.log('TabActiveChanged tab to #' + tab.id + " index: " + tab.index);
+		new_index = tab.index;
+	});
+};
+
+function TabHighlightChanged(tab){
+	chrome.tabs.getSelected(null, function(tab){
+		console.log('TabHighlightChanged tab to #' + tab.id + " index: " + tab.index);
+		new_index = tab.index;
+	});
+};
+
+// function to write arbitrary messages and timestamps into the 
+// <div id=log> tag in this page
+function appendToLog(logLine) {
+  document.getElementById('log')
+      .appendChild(document.createElement('div'))
+      .innerText = (new Date().getTime().toString())+' ' + logLine;
+};
+</script>
+
+</body>
+<div id="log"></div> 
+</html>

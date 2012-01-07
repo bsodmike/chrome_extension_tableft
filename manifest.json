@@ -1,0 +1,9 @@
+{
+  "name": "Tableft",
+  "version": "1.0",
+  "description": "Tabs to the left, pretty epic.",
+  "background_page": "background.html",
+  "permissions": [
+    "tabs"
+  ]
+}
