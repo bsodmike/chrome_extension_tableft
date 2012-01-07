@@ -37,6 +37,7 @@ chrome.tabs.onCreated.addListener(TabCreated);
 chrome.tabs.onSelectionChanged.addListener(TabSelectionChanged);
 chrome.tabs.onActiveChanged.addListener(TabActiveChanged);
 chrome.tabs.onHighlightChanged.addListener(TabHighlightChanged);
+chrome.tabs.onMoved.addListener(TabMoved);
 
 function TabCreated(tab) {
   console.log('tabs.onCreated --'
@@ -70,6 +71,14 @@ function TabHighlightChanged(tab){
 		new_index = tab.index;
 	});
 };
+
+function TabMoved(tab){
+	chrome.tabs.getSelected(null, function(tab){
+		console.log('TabMoved to #' + tab.id + " index: " + tab.index);
+		new_index = tab.index;
+	});
+};
+
 
 // function to write arbitrary messages and timestamps into the 
 // <div id=log> tag in this page
