@@ -1,6 +1,6 @@
 {
   "name": "Tableft",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Tabs to the left, pretty epic.",
   "background_page": "background.html",
   "permissions": [
